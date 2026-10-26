@@ -669,7 +669,7 @@ class ControlsTabPage(DirectFrame):
         guiButton = loader.loadModel('phase_3/models/gui/quit_button')
         buttonImage = (guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR'))
         textStartHeight = 0.45
-        textRowHeight = 0.105
+        textRowHeight = 0.09
         leftMargin = -0.72
         buttonbase_xcoord = 0.35
         button_textpos = (0, -0.02)
@@ -678,13 +678,13 @@ class ControlsTabPage(DirectFrame):
         for i, action in enumerate(KeyBindings.Actions):
             height = textStartHeight - i * textRowHeight
             DirectLabel(parent=self, relief=None, text=TTLocalizer.ControlsPageActionNames[action], text_align=TextNode.ALeft, text_scale=options_text_scale, pos=(leftMargin, 0, height))
-            self.keyButtons[action] = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text='', text_scale=0.045, text_pos=button_textpos, pos=(buttonbase_xcoord, 0, height), command=self.__startCapture, extraArgs=[action])
+            self.keyButtons[action] = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 0.8), text='', text_scale=0.045, text_pos=button_textpos, pos=(buttonbase_xcoord, 0, height), command=self.__startCapture, extraArgs=[action])
 
-        self.statusLabel = DirectLabel(parent=self, relief=None, text='', text_scale=0.045, text_wordwrap=28, pos=(0, 0, -0.2))
-        self.chatLabel = DirectLabel(parent=self, relief=None, text='', text_scale=0.045, text_wordwrap=28, pos=(0, 0, -0.33))
-        DirectLabel(parent=self, relief=None, text=TTLocalizer.ControlsPagePresets, text_align=TextNode.ALeft, text_scale=options_text_scale, pos=(leftMargin, 0, -0.52))
-        self.arrowKeysButton = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text=TTLocalizer.ControlsPageArrowKeysPreset, text_scale=0.045, text_pos=button_textpos, pos=(-0.08, 0, -0.52), command=self.__usePreset, extraArgs=[KeyBindings.ArrowKeysPreset])
-        self.wasdButton = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text=TTLocalizer.ControlsPageWASDPreset, text_scale=0.045, text_pos=button_textpos, pos=(buttonbase_xcoord, 0, -0.52), command=self.__usePreset, extraArgs=[KeyBindings.WASDPreset])
+        self.statusLabel = DirectLabel(parent=self, relief=None, text='', text_scale=0.045, text_wordwrap=28, pos=(0, 0, -0.29))
+        self.chatLabel = DirectLabel(parent=self, relief=None, text='', text_scale=0.045, text_wordwrap=28, pos=(0, 0, -0.4))
+        DirectLabel(parent=self, relief=None, text=TTLocalizer.ControlsPagePresets, text_align=TextNode.ALeft, text_scale=options_text_scale, pos=(leftMargin, 0, -0.56))
+        self.arrowKeysButton = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text=TTLocalizer.ControlsPageArrowKeysPreset, text_scale=0.045, text_pos=button_textpos, pos=(-0.08, 0, -0.56), command=self.__usePreset, extraArgs=[KeyBindings.ArrowKeysPreset])
+        self.wasdButton = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text=TTLocalizer.ControlsPageWASDPreset, text_scale=0.045, text_pos=button_textpos, pos=(buttonbase_xcoord, 0, -0.56), command=self.__usePreset, extraArgs=[KeyBindings.WASDPreset])
         guiButton.removeNode()
 
     def enter(self):

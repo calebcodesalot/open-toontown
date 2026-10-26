@@ -5,12 +5,16 @@ Reverse = 'reverse'
 TurnLeft = 'turnLeft'
 TurnRight = 'turnRight'
 Jump = 'jump'
+Quests = 'quests'
+Inventory = 'inventory'
 Chat = 'chat'
 Actions = (Forward,
  Reverse,
  TurnLeft,
  TurnRight,
  Jump,
+ Quests,
+ Inventory,
  Chat)
 ArrowKeysPreset = 'arrows'
 WASDPreset = 'wasd'
@@ -19,12 +23,16 @@ Presets = {ArrowKeysPreset: {Forward: 'arrow_up',
                    TurnLeft: 'arrow_left',
                    TurnRight: 'arrow_right',
                    Jump: 'control',
+                   Quests: 'end',
+                   Inventory: 'home',
                    Chat: 'enter'},
  WASDPreset: {Forward: 'w',
               Reverse: 's',
               TurnLeft: 'a',
               TurnRight: 'd',
               Jump: 'space',
+              Quests: 'end',
+              Inventory: 'home',
               Chat: 'enter'}}
 ChangedEvent = 'keyBindingsChanged'
 ModifierKeys = ('shift', 'control', 'alt')
@@ -41,6 +49,8 @@ ReverseEvent = getEvent(Reverse)
 TurnLeftEvent = getEvent(TurnLeft)
 TurnRightEvent = getEvent(TurnRight)
 JumpEvent = getEvent(Jump)
+QuestsEvent = getEvent(Quests)
+InventoryEvent = getEvent(Inventory)
 ChatEvent = getEvent(Chat)
 
 def isTypingKey(key):
