@@ -9,6 +9,8 @@ from otp.speedchat import SpeedChat
 from otp.speedchat import SCColorScheme
 from otp.speedchat import SCStaticTextTerminal
 from direct.directnotify import DirectNotifyGlobal
+from toontown.toonbase import ToontownGlobals
+from otp.otpbase import KeyBindings
 from enum import IntEnum
 speedChatStyles = ((2000,
   (200 / 255.0, 60 / 255.0, 229 / 255.0),
@@ -50,7 +52,15 @@ speedChatStyles = ((2000,
   (170 / 255.0, 120 / 255.0, 20 / 255.0),
   (165 / 255.0, 120 / 255.0, 50 / 255.0),
   (210 / 255.0, 200 / 255.0, 180 / 255.0)))
-PageMode = IntEnum('PageMode', ('Options', 'Codes'), start=0)
+PageMode = IntEnum('PageMode', ('Options', 'Codes', 'Controls'), start=0)
+
+def getKeyName(key):
+    if key in TTLocalizer.ControlsPageKeyNames:
+        return TTLocalizer.ControlsPageKeyNames[key]
+    elif len(key) == 1:
+        return key.upper()
+    else:
+        return key.replace('_', ' ').title()
 
 class OptionsPage(ShtikerPage.ShtikerPage):
     notify = DirectNotifyGlobal.directNotify.newCategory('OptionsPage')
@@ -64,6 +74,8 @@ class OptionsPage(ShtikerPage.ShtikerPage):
         self.optionsTabPage.hide()
         self.codesTabPage = CodesTabPage(self)
         self.codesTabPage.hide()
+        self.controlsTabPage = ControlsTabPage(self)
+        self.controlsTabPage.hide()
         titleHeight = 0.61
         self.title = DirectLabel(parent=self, relief=None, text=TTLocalizer.OptionsPageTitle, text_scale=0.12, pos=(0, 0, titleHeight))
         normalColor = (1, 1, 1, 1)
@@ -73,6 +85,10 @@ class OptionsPage(ShtikerPage.ShtikerPage):
         gui = loader.loadModel('phase_3.5/models/gui/fishingBook')
         self.optionsTab = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageTitle, text_scale=TTLocalizer.OPoptionsTab, text_align=TextNode.ALeft, text_pos=(0.01, 0.0, 0.0), image=gui.find('**/tabs/polySurface1'), image_pos=(0.55, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Options], pos=(-0.36, 0, 0.77))
         self.codesTab = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageCodesTab, text_scale=TTLocalizer.OPoptionsTab, text_align=TextNode.ALeft, text_pos=(-0.035, 0.0, 0.0), image=gui.find('**/tabs/polySurface2'), image_pos=(0.12, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Codes], pos=(0.11, 0, 0.77))
+        self.controlsTab = DirectButton(parent=self, relief=None, text=TTLocalizer.OptionsPageControlsTab, text_scale=TTLocalizer.OPoptionsTab, text_align=TextNode.ALeft, text_pos=(0.03, 0.0, 0.0), image=gui.find('**/tabs/polySurface3'), image_pos=(-0.28, 1, -0.91), image_hpr=(0, 0, -90), image_scale=(0.033, 0.033, 0.035), image_color=normalColor, image1_color=clickColor, image2_color=rolloverColor, image3_color=diabledColor, text_fg=Vec4(0.2, 0.1, 0, 1), command=self.setMode, extraArgs=[PageMode.Controls])
+        self.optionsTab.setPos(-0.55, 0, 0.775)
+        self.codesTab.setPos(-0.13, 0, 0.775)
+        self.controlsTab.setPos(0.28, 0, 0.775)
         return
 
     def enter(self):
@@ -82,10 +98,12 @@ class OptionsPage(ShtikerPage.ShtikerPage):
     def exit(self):
         self.optionsTabPage.exit()
         self.codesTabPage.exit()
+        self.controlsTabPage.exit()
         ShtikerPage.ShtikerPage.exit(self)
 
     def unload(self):
         self.optionsTabPage.unload()
+        self.controlsTabPage.unload()
         del self.title
         ShtikerPage.ShtikerPage.unload(self)
 
@@ -103,13 +121,26 @@ class OptionsPage(ShtikerPage.ShtikerPage):
             self.optionsTabPage.enter()
             self.codesTab['state'] = DGG.NORMAL
             self.codesTabPage.exit()
+            self.controlsTab['state'] = DGG.NORMAL
+            self.controlsTabPage.exit()
         elif mode == PageMode.Codes:
             self.mode = PageMode.Codes
             self.title['text'] = TTLocalizer.CdrPageTitle
             self.optionsTab['state'] = DGG.NORMAL
             self.optionsTabPage.exit()
+            self.controlsTab['state'] = DGG.NORMAL
+            self.controlsTabPage.exit()
             self.codesTab['state'] = DGG.DISABLED
             self.codesTabPage.enter()
+        elif mode == PageMode.Controls:
+            self.mode = PageMode.Controls
+            self.title['text'] = TTLocalizer.ControlsPageTitle
+            self.optionsTab['state'] = DGG.NORMAL
+            self.optionsTabPage.exit()
+            self.codesTab['state'] = DGG.NORMAL
+            self.codesTabPage.exit()
+            self.controlsTab['state'] = DGG.DISABLED
+            self.controlsTabPage.enter()
         else:
             raise Exception('OptionsPage::setMode - Invalid Mode %s' % mode)
 
@@ -603,3 +634,138 @@ class CodesTabPage(DirectFrame):
         self.codeInput['state'] = DGG.NORMAL
         self.codeInput['focus'] = 1
         self.submitButton['state'] = DGG.NORMAL
+
+
+class ControlsTabPage(DirectFrame):
+    notify = DirectNotifyGlobal.directNotify.newCategory('ControlsTabPage')
+    CaptureEvent = 'controlsTabPage-keyCaptured'
+    ReservedKeys = (ToontownGlobals.OptionsPageHotkey,
+     ToontownGlobals.StickerBookHotkey,
+     ToontownGlobals.FriendsListHotkey,
+     ToontownGlobals.ScreenshotHotkey,
+     ToontownGlobals.MapHotkey)
+    KeyAliases = {'lshift': 'shift',
+     'rshift': 'shift',
+     'lcontrol': 'control',
+     'rcontrol': 'control',
+     'lalt': 'alt',
+     'ralt': 'alt'}
+
+    def __init__(self, parent = aspect2d):
+        self._parent = parent
+        self.entered = False
+        self.captureAction = None
+        self.oldButtonDownEvent = ''
+        DirectFrame.__init__(self, parent=self._parent, relief=None, pos=(0.0, 0.0, 0.0), scale=(1.0, 1.0, 1.0))
+        self.load()
+        return
+
+    def destroy(self):
+        self._parent = None
+        DirectFrame.destroy(self)
+        return
+
+    def load(self):
+        guiButton = loader.loadModel('phase_3/models/gui/quit_button')
+        buttonImage = (guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR'))
+        textStartHeight = 0.45
+        textRowHeight = 0.105
+        leftMargin = -0.72
+        buttonbase_xcoord = 0.35
+        button_textpos = (0, -0.02)
+        options_text_scale = 0.052
+        self.keyButtons = {}
+        for i, action in enumerate(KeyBindings.Actions):
+            height = textStartHeight - i * textRowHeight
+            DirectLabel(parent=self, relief=None, text=TTLocalizer.ControlsPageActionNames[action], text_align=TextNode.ALeft, text_scale=options_text_scale, pos=(leftMargin, 0, height))
+            self.keyButtons[action] = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text='', text_scale=0.045, text_pos=button_textpos, pos=(buttonbase_xcoord, 0, height), command=self.__startCapture, extraArgs=[action])
+
+        self.statusLabel = DirectLabel(parent=self, relief=None, text='', text_scale=0.045, text_wordwrap=28, pos=(0, 0, -0.2))
+        self.chatLabel = DirectLabel(parent=self, relief=None, text='', text_scale=0.045, text_wordwrap=28, pos=(0, 0, -0.33))
+        DirectLabel(parent=self, relief=None, text=TTLocalizer.ControlsPagePresets, text_align=TextNode.ALeft, text_scale=options_text_scale, pos=(leftMargin, 0, -0.52))
+        self.arrowKeysButton = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text=TTLocalizer.ControlsPageArrowKeysPreset, text_scale=0.045, text_pos=button_textpos, pos=(-0.08, 0, -0.52), command=self.__usePreset, extraArgs=[KeyBindings.ArrowKeysPreset])
+        self.wasdButton = DirectButton(parent=self, relief=None, image=buttonImage, image_scale=(0.9, 1, 1), text=TTLocalizer.ControlsPageWASDPreset, text_scale=0.045, text_pos=button_textpos, pos=(buttonbase_xcoord, 0, -0.52), command=self.__usePreset, extraArgs=[KeyBindings.WASDPreset])
+        guiButton.removeNode()
+
+    def enter(self):
+        self.show()
+        if self.entered:
+            return
+        self.entered = True
+        # Leave chat closed so keys pressed here aren't typed into it.
+        localAvatar.chatMgr.fsm.request('otherDialog')
+        self._parent.book.setPageArrowKeysEnabled(False)
+        self.accept(KeyBindings.ChangedEvent, self.__updateKeys)
+        self.__updateKeys()
+
+    def exit(self):
+        self.hide()
+        if not self.entered:
+            return
+        self.entered = False
+        self.__stopCapture()
+        self.ignore(KeyBindings.ChangedEvent)
+        self._parent.book.setPageArrowKeysEnabled(True)
+        localAvatar.chatMgr.fsm.request('mainMenu')
+
+    def unload(self):
+        self.exit()
+        for button in self.keyButtons.values():
+            button.destroy()
+
+        self.keyButtons = {}
+        self.arrowKeysButton.destroy()
+        self.wasdButton.destroy()
+        del self.arrowKeysButton
+        del self.wasdButton
+        del self.statusLabel
+        del self.chatLabel
+
+    def __updateKeys(self):
+        for action, button in self.keyButtons.items():
+            button['text'] = getKeyName(base.keyBindings.getKey(action))
+
+        self.statusLabel['text'] = TTLocalizer.ControlsPageInstructions
+        if base.keyBindings.hasTypingKeys():
+            self.chatLabel['text'] = TTLocalizer.ControlsPageChatKey % getKeyName(base.keyBindings.getKey(KeyBindings.Chat))
+        else:
+            self.chatLabel['text'] = TTLocalizer.ControlsPageChatTyping
+
+    def __startCapture(self, action):
+        messenger.send('wakeup')
+        if self.captureAction == action:
+            self.__stopCapture()
+            return
+        self.__stopCapture()
+        self.captureAction = action
+        self.keyButtons[action]['text'] = TTLocalizer.ControlsPagePressKey
+        self.statusLabel['text'] = TTLocalizer.ControlsPageWaiting % TTLocalizer.ControlsPageActionNames[action]
+        # The button thrower reports the name of the next key pressed.
+        buttonThrower = base.buttonThrowers[0].node()
+        self.oldButtonDownEvent = buttonThrower.getButtonDownEvent()
+        buttonThrower.setButtonDownEvent(self.CaptureEvent)
+        self.accept(self.CaptureEvent, self.__keyCaptured)
+
+    def __stopCapture(self):
+        if self.captureAction == None:
+            return
+        self.captureAction = None
+        self.ignore(self.CaptureEvent)
+        base.buttonThrowers[0].node().setButtonDownEvent(self.oldButtonDownEvent)
+        self.__updateKeys()
+
+    def __keyCaptured(self, key):
+        key = self.KeyAliases.get(key, key)
+        if key.startswith('mouse') or key.startswith('wheel'):
+            return
+        if key in self.ReservedKeys:
+            self.statusLabel['text'] = TTLocalizer.ControlsPageReservedKey % getKeyName(key)
+            return
+        action = self.captureAction
+        self.__stopCapture()
+        base.keyBindings.setKey(action, key)
+
+    def __usePreset(self, preset):
+        messenger.send('wakeup')
+        self.__stopCapture()
+        base.keyBindings.usePreset(preset)
