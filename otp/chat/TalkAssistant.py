@@ -630,6 +630,9 @@ class TalkAssistant(DirectObject.DirectObject):
              message,
              [],
              0])
+            # Astron doesn't echo our own field updates back to us, so show
+            # the chat bubble and log the message locally.
+            base.localAvatar.setTalk(base.localAvatar.doId, 0, base.localAvatar.getName(), message, [], 0)
             messenger.send('chatUpdate', [message, chatFlags])
         return error
 
