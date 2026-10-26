@@ -11,6 +11,7 @@ from otp.speedchat import SCStaticTextTerminal
 from direct.directnotify import DirectNotifyGlobal
 from toontown.toonbase import ToontownGlobals
 from otp.otpbase import KeyBindings
+from otp.otpbase import SmoothAnimations
 from enum import IntEnum
 speedChatStyles = ((2000,
   (200 / 255.0, 60 / 255.0, 229 / 255.0),
@@ -176,7 +177,7 @@ class OptionsTabPage(DirectFrame):
         gui = loader.loadModel('phase_3.5/models/gui/friendslist_gui')
         titleHeight = 0.61
         textStartHeight = 0.45
-        textRowHeight = 0.145
+        textRowHeight = 0.13
         leftMargin = -0.72
         buttonbase_xcoord = 0.35
         buttonbase_ycoord = 0.45
@@ -190,22 +191,24 @@ class OptionsTabPage(DirectFrame):
         self.Friends_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=16, pos=(leftMargin, 0, textStartHeight - 3 * textRowHeight))
         self.Whispers_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=16, pos=(leftMargin, 0, textStartHeight - 4 * textRowHeight))
         self.DisplaySettings_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=10, pos=(leftMargin, 0, textStartHeight - 5 * textRowHeight))
-        self.SpeedChatStyle_Label = DirectLabel(parent=self, relief=None, text=TTLocalizer.OptionsPageSpeedChatStyleLabel, text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=10, pos=(leftMargin, 0, textStartHeight - 6 * textRowHeight))
+        self.SpeedChatStyle_Label = DirectLabel(parent=self, relief=None, text=TTLocalizer.OptionsPageSpeedChatStyleLabel, text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=10, pos=(leftMargin, 0, textStartHeight - 7 * textRowHeight))
         self.ToonChatSounds_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=15, pos=(leftMargin, 0, textStartHeight - 2 * textRowHeight + 0.025))
         self.ToonChatSounds_Label.setScale(0.9)
+        self.SmoothAnimations_Label = DirectLabel(parent=self, relief=None, text='', text_align=TextNode.ALeft, text_scale=options_text_scale, text_wordwrap=16, pos=(leftMargin, 0, textStartHeight - 6 * textRowHeight))
         self.Music_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord), command=self.__doToggleMusic)
         self.SoundFX_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight), command=self.__doToggleSfx)
         self.Friends_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight * 3), command=self.__doToggleAcceptFriends)
         self.Whispers_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight * 4), command=self.__doToggleAcceptWhispers)
         self.DisplaySettingsButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image3_color=Vec4(0.5, 0.5, 0.5, 0.5), image_scale=button_image_scale, text=TTLocalizer.OptionsPageChange, text3_fg=(0.5, 0.5, 0.5, 0.75), text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight * 5), command=self.__doDisplaySettings)
+        self.SmoothAnimations_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=button_image_scale, text='', text_scale=options_text_scale, text_pos=button_textpos, pos=(buttonbase_xcoord, 0.0, buttonbase_ycoord - textRowHeight * 6), command=self.__doToggleSmoothAnimations)
         self.speedChatStyleLeftArrow = DirectButton(parent=self, relief=None, image=(gui.find('**/Horiz_Arrow_UP'),
          gui.find('**/Horiz_Arrow_DN'),
          gui.find('**/Horiz_Arrow_Rllvr'),
-         gui.find('**/Horiz_Arrow_UP')), image3_color=Vec4(1, 1, 1, 0.5), scale=(-1.0, 1.0, 1.0), pos=(0.25, 0, buttonbase_ycoord - textRowHeight * 6), command=self.__doSpeedChatStyleLeft)
+         gui.find('**/Horiz_Arrow_UP')), image3_color=Vec4(1, 1, 1, 0.5), scale=(-1.0, 1.0, 1.0), pos=(0.25, 0, buttonbase_ycoord - textRowHeight * 7), command=self.__doSpeedChatStyleLeft)
         self.speedChatStyleRightArrow = DirectButton(parent=self, relief=None, image=(gui.find('**/Horiz_Arrow_UP'),
          gui.find('**/Horiz_Arrow_DN'),
          gui.find('**/Horiz_Arrow_Rllvr'),
-         gui.find('**/Horiz_Arrow_UP')), image3_color=Vec4(1, 1, 1, 0.5), pos=(0.65, 0, buttonbase_ycoord - textRowHeight * 6), command=self.__doSpeedChatStyleRight)
+         gui.find('**/Horiz_Arrow_UP')), image3_color=Vec4(1, 1, 1, 0.5), pos=(0.65, 0, buttonbase_ycoord - textRowHeight * 7), command=self.__doSpeedChatStyleRight)
         self.ToonChatSounds_toggleButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'),
          guiButton.find('**/QuitBtn_DN'),
          guiButton.find('**/QuitBtn_RLVR'),
@@ -213,7 +216,7 @@ class OptionsTabPage(DirectFrame):
         self.ToonChatSounds_toggleButton.setScale(0.8)
         self.speedChatStyleText = SpeedChat.SpeedChat(name='OptionsPageStyleText', structure=[2000], backgroundModelName='phase_3/models/gui/ChatPanel', guiModelName='phase_3.5/models/gui/speedChatGui')
         self.speedChatStyleText.setScale(self.speed_chat_scale)
-        self.speedChatStyleText.setPos(0.37, 0, buttonbase_ycoord - textRowHeight * 6 + 0.03)
+        self.speedChatStyleText.setPos(0.37, 0, buttonbase_ycoord - textRowHeight * 7 + 0.03)
         self.speedChatStyleText.reparentTo(self, DGG.FOREGROUND_SORT_INDEX)
         self.exitButton = DirectButton(parent=self, relief=None, image=(guiButton.find('**/QuitBtn_UP'), guiButton.find('**/QuitBtn_DN'), guiButton.find('**/QuitBtn_RLVR')), image_scale=1.15, text=TTLocalizer.OptionsPageExitToontown, text_scale=options_text_scale, text_pos=button_textpos, textMayChange=0, pos=(0.45, 0, -0.6), command=self.__handleExitShowWithConfirm)
         guiButton.removeNode()
@@ -230,6 +233,7 @@ class OptionsTabPage(DirectFrame):
         self.__setAcceptWhispersButton()
         self.__setDisplaySettings()
         self.__setToonChatSoundsButton()
+        self.__setSmoothAnimationsButton()
         self.speedChatStyleText.enter()
         self.speedChatStyleIndex = base.localAvatar.getSpeedChatStyleIndex()
         self.updateSpeedChatStyle()
@@ -260,6 +264,7 @@ class OptionsTabPage(DirectFrame):
         self.Friends_toggleButton.destroy()
         self.Whispers_toggleButton.destroy()
         self.DisplaySettingsButton.destroy()
+        self.SmoothAnimations_toggleButton.destroy()
         self.speedChatStyleLeftArrow.destroy()
         self.speedChatStyleRightArrow.destroy()
         del self.exitButton
@@ -268,6 +273,8 @@ class OptionsTabPage(DirectFrame):
         del self.Friends_Label
         del self.Whispers_Label
         del self.SpeedChatStyle_Label
+        del self.SmoothAnimations_Label
+        del self.SmoothAnimations_toggleButton
         del self.SoundFX_toggleButton
         del self.Music_toggleButton
         del self.Friends_toggleButton
@@ -343,6 +350,21 @@ class OptionsTabPage(DirectFrame):
         else:
             self.ToonChatSounds_Label.setColorScale(0.5, 0.5, 0.5, 0.5)
             self.ToonChatSounds_toggleButton['state'] = DGG.DISABLED
+
+    def __doToggleSmoothAnimations(self):
+        messenger.send('wakeup')
+        SmoothAnimations.setEnabled(not SmoothAnimations.isEnabled())
+        base.settings.updateSetting(SmoothAnimations.SettingName, SmoothAnimations.isEnabled())
+        self.settingsChanged = 1
+        self.__setSmoothAnimationsButton()
+
+    def __setSmoothAnimationsButton(self):
+        if SmoothAnimations.isEnabled():
+            self.SmoothAnimations_Label['text'] = TTLocalizer.OptionsPageSmoothAnimationsOnLabel
+            self.SmoothAnimations_toggleButton['text'] = TTLocalizer.OptionsPageToggleOff
+        else:
+            self.SmoothAnimations_Label['text'] = TTLocalizer.OptionsPageSmoothAnimationsOffLabel
+            self.SmoothAnimations_toggleButton['text'] = TTLocalizer.OptionsPageToggleOn
 
     def __doToggleAcceptFriends(self):
         messenger.send('wakeup')
