@@ -4709,6 +4709,8 @@ ControlsPageActionNames = {'forward': 'Walk Forward',
  'turnLeft': 'Turn Left',
  'turnRight': 'Turn Right',
  'jump': 'Jump / Action',
+ 'quests': 'Show ToonTasks',
+ 'inventory': 'Show Gags',
  'chat': 'Open Chat'}
 ControlsPageKeyNames = {'arrow_up': 'Up Arrow',
  'arrow_down': 'Down Arrow',
